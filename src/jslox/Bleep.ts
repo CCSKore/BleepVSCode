@@ -4,7 +4,7 @@ import { Parser } from "./Parser";
 import { Resolver } from "./Resolver";
 import { Scanner } from "./Scanner";
 
-export class Lox {
+export class Bleep {
     public hadError = false;
     public hadRuntimeError = false;
 
