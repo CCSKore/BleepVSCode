@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-    "name": "Lox",
-    "scopeName": "source.lox",
+    "name": "Bleep",
+    "scopeName": "source.bleep",
     "patterns": [
         {
             "include": "#keywords"
@@ -20,43 +20,43 @@
         "keywords": {
             "patterns": [
                 {
-                    "name": "keyword.control.lox",
+                    "name": "keyword.control.bleep",
                     "match": "\\b(else|for|if|while|break|continue|return)\\b"
                 },
                 {
-                    "name": "keyword.operator.lox",
+                    "name": "keyword.operator.bleep",
                     "match": "\\b(and|or|\\!)\\b"
                 },
                 {
-                    "name": "constant.language.null.lox",
-                    "match": "\\b(nil)\\b"
+                    "name": "constant.language.null.bleep",
+                    "match": "\\b(empty)\\b"
                 },
                 {
-                    "name": "constant.language.boolean.lox",
+                    "name": "constant.language.boolean.bleep",
                     "match": "\\b(true|false)\\b"
                 },
                 {
-                    "name": "variable.language.super.lox",
+                    "name": "variable.language.super.bleep",
                     "match": "\\b(super)\\b"
                 },
                 {
-                    "name": "variable.language.this.lox",
+                    "name": "variable.language.this.bleep",
                     "match": "\\b(this)\\b"
                 },
                 {
-                    "name": "variable.function.buildin.lox",
-                    "match": "\\b(print|clock)\\b"
+                    "name": "variable.function.buildin.bleep",
+                    "match": "\\b(clock|thread|info|warn|error)\\b"
                 },
                 {
-                    "name": "storage.type.class.lox",
+                    "name": "storage.type.class.bleep",
                     "match": "\\b(class)\\b"
                 },
                 {
-                    "name": "storage.type.function.lox",
+                    "name": "storage.type.function.bleep",
                     "match": "\\b(fun)\\b"
                 },
                 {
-                    "name": "storage.type.lox",
+                    "name": "storage.type.bleep",
                     "match": "\\b(var)\\b"
                 }
             ]
@@ -65,17 +65,17 @@
             "patterns": [
                 {
                     "match": "\\b[0-9]+(?:.[0-9]+)?\\b",
-                    "name": "constant.numeric.lox"
+                    "name": "constant.numeric.bleep"
                 }
             ]
         },
         "strings": {
-            "name": "string.quoted.double.lox",
+            "name": "string.quoted.double.bleep",
             "begin": "\"",
             "end": "\"",
             "patterns": [
                 {
-                    "name": "constant.character.escape.lox",
+                    "name": "constant.character.escape.bleep",
                     "match": "\\\\."
                 }
             ]
@@ -83,7 +83,7 @@
         "comments": {
             "patterns": [
                 {
-                    "name": "comment.line.double-slash.lox",
+                    "name": "comment.line.double-slash.bleep",
                     "match": "\\/\\/.*"
                 }
             ]
