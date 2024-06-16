@@ -1,17 +1,17 @@
 import { RuntimeError } from "./Error";
-import { LoxType } from "./Interpreter";
+import { BleepType } from "./Interpreter";
 import { Token } from "./Token";
 
 export class Environment {
-    private readonly values: Map<string, LoxType> = new Map();
+    private readonly values: Map<string, BleepType> = new Map();
 
     constructor(readonly enclosing?: Environment) {}
 
-    define(name: string, value: LoxType): void {
+    define(name: string, value: BleepType): void {
         this.values.set(name, value);
     }
 
-    get(name: Token): LoxType {
+    get(name: Token): BleepType {
         if (this.values.has(name.lexeme)) {
             return this.values.get(name.lexeme)!;
         }
@@ -23,7 +23,7 @@ export class Environment {
         throw new RuntimeError(name, `Undefined variable '${name.lexeme}'.`);
     }
 
-    getAt(distance: number, lexeme: string): LoxType {
+    getAt(distance: number, lexeme: string): BleepType {
         return this.ancestor(distance).values.get(lexeme)!;
     }
 
@@ -35,7 +35,7 @@ export class Environment {
         return environment;
     }
 
-    assign(name: Token, value: LoxType): void {
+    assign(name: Token, value: BleepType): void {
         if (this.values.has(name.lexeme)) {
             this.values.set(name.lexeme, value);
             return;
@@ -49,12 +49,12 @@ export class Environment {
         throw new RuntimeError(name, `Undefined variable '${name.lexeme}'.`);
     }
 
-    assignAt(distance: number, name: Token, value: LoxType) {
+    assignAt(distance: number, name: Token, value: BleepType) {
         this.ancestor(distance).values.set(name.lexeme, value);
     }
 
     // mostly for testing
-    getByName(name: string): LoxType {
+    getByName(name: string): BleepType {
         if (this.values.has(name)) {
             return this.values.get(name)!;
         }
