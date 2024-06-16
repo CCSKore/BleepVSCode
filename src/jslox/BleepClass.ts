@@ -1,9 +1,9 @@
-import { Callable, LoxFunction } from "./LoxFunction";
-import { Interpreter, LoxType } from "./Interpreter";
-import { LoxInstance } from "./LoxInstance";
+import { Callable } from "./BleepFunction";
+import { Interpreter, BleepType } from "./Interpreter";
+import { BleepInstance } from "./BleepInstance";
 
-export class LoxClass extends Callable {
-    constructor(public name: string, readonly superclass: LoxClass | null, readonly methods: Map<string, LoxFunction>) {
+export class BleepClass extends Callable {
+    constructor(public name: string, readonly superclass: BleepClass | null, readonly methods: Map<string, Callable>) {
         super();
     }
 
@@ -15,7 +15,7 @@ export class LoxClass extends Callable {
         return 0;
     }
 
-    findMethod(lexeme: string): LoxFunction | undefined {
+    findMethod(lexeme: string): Callable | undefined {
         if (this.methods.has(lexeme)) {
             return this.methods.get(lexeme);
         }
@@ -27,8 +27,8 @@ export class LoxClass extends Callable {
         return;
     }
 
-    call(interpreter: Interpreter, args: LoxType[]): LoxType {
-        const instance = new LoxInstance(this);
+    call(interpreter: Interpreter, args: BleepType[]): BleepType {
+        const instance = new BleepInstance(this);
         const initializer = this.findMethod("init");
         if (initializer) {
             initializer.bind(instance).call(interpreter, args);
