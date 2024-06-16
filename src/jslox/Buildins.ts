@@ -1,6 +1,6 @@
-import { Callable } from "./LoxFunction";
+import { Callable } from "./BleepFunction";
 import { Environment } from "./Environment";
-import { Interpreter, LoxType } from "./Interpreter";
+import { Interpreter, BleepType } from "./Interpreter";
 
 export class Buildins extends Environment {
     constructor() {
@@ -8,17 +8,17 @@ export class Buildins extends Environment {
         this.addBuildin("clock", 0, () => Date.now() / 1000);
     }
 
-    private addBuildin(name: string, arity: number, fn: (args: Array<LoxType>) => LoxType) {
+    private addBuildin(name: string, arity: number, fn: (args: Array<BleepType>) => BleepType) {
         this.define(name, new BuildinCallable(name, arity, fn));
     }
 }
 
 export class BuildinCallable extends Callable {
-    constructor(private name: string, readonly arity: number, private readonly fn: (args: Array<LoxType>) => LoxType) {
+    constructor(private name: string, readonly arity: number, private readonly fn: (args: Array<BleepType>) => BleepType) {
         super();
     }
 
-    call(interpreter: Interpreter, args: Array<LoxType>): LoxType {
+    call(interpreter: Interpreter, args: Array<BleepType>): BleepType {
         return this.fn(args);
     }
 
