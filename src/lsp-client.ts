@@ -30,11 +30,11 @@ export async function activateLanguageClient(context: ExtensionContext) {
     // Options to control the language client
     const clientOptions: LanguageClientOptions = {
         // Register the server for lox documents
-        documentSelector: [{ scheme: "file", language: "lox" }],
+        documentSelector: [{ scheme: "file", language: "bleep" }],
     };
 
     // Create the language client and start the client.
-    client = new LanguageClient("loxLanguageServer", "Lox Language Server", serverOptions, clientOptions);
+    client = new LanguageClient("bleepLanguageServer", "Bleep Language Server", serverOptions, clientOptions);
 
     // Start the client. This will also launch the server
     await client.start();
