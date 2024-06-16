@@ -1,7 +1,7 @@
 import { Environment } from "./Environment";
 import { FunctionStmt } from "./Expr";
 import { Interpreter, BleepType } from "./Interpreter";
-import { BleepInstance } from "./LoxInstance";
+import { BleepInstance } from "./BleepInstance";
 
 export class ReturnException extends Error {
     constructor(public value: BleepType) {
@@ -13,6 +13,11 @@ export abstract class Callable {
     abstract get arity(): number;
     abstract call(interpreter: Interpreter, args: Array<BleepType>): BleepType;
     abstract toString(): string;
+    bind(instance: BleepInstance): Callable {
+        const environment = new Environment(Interpreter.get().environment);
+        environment.define("this", instance);
+        return this;
+    }
 }
 
 export class BleepFunction extends Callable {
@@ -31,7 +36,7 @@ export class BleepFunction extends Callable {
     bind(instance: BleepInstance): BleepFunction {
         const environment = new Environment(this.closure);
         environment.define("this", instance);
-        return new LoxFunction(this.declaration, environment, this.isInitializer);
+        return new BleepFunction(this.declaration, environment, this.isInitializer);
     }
 
     call(interpreter: Interpreter, args: Array<BleepType>): BleepType {

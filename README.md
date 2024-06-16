@@ -1,24 +1,2 @@
-# Lox LSP
-
-This extension provides comprehensive language support to the [Lox](https://craftinginterpreters.com/the-lox-language.html) language.
-
-Lox is an educational language developed for the fantastic book "[Crafting Interpreters](https://craftinginterpreters.com/)" by [Bob Nystrom](https://twitter.com/munificentbob).
-
-## Features
-
-![feature X](images/screenshot.png)
-
-Features:
-
--   Basix syntax highlighting
--   [Semantic syntax highlighting](https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide)
--   Go to definition
--   Find references
--   Go to symbol
--   Document outline
--   Rename symbol
--   Highlight document: highlights all references to the symbol scoped to this file
-
-## Why????
-
-For me this is an educational fun exercise. I've been following along with the book to create an interpreter for Lox in TypeSript and thought it would be fun to also build up an LSP server in the process.
+# Bleep LSP
+A fork of (fjakobs's Lox LSP)[https://github.com/fjakobs/jslox] extension, Bleep itself is a fork of Lox so this project was used cause writing a language server looks difficult, thanks fjakobs :D

@@ -1,14 +1,14 @@
 {
-    "name": "lox-lsp",
-    "displayName": "Lox LSP",
-    "description": "LSP server for the lox language",
+    "name": "bleep-lsp",
+    "displayName": "Bleep LSP",
+    "description": "LSP server for the Bleep language",
     "version": "0.0.2",
     "publisher": "fabianjakobs",
     "license": "Apache-2.0",
     "icon": "images/logo.png",
     "repository": {
         "type": "git",
-        "url": "https://github.com/fjakobs/jslox"
+        "url": "https://github.com/CCSKore/BleepVSCode"
     },
     "engines": {
         "vscode": "^1.77.0"
@@ -17,28 +17,28 @@
         "Programming Languages"
     ],
     "activationEvents": [
-        "onLanguage:lox"
+        "onLanguage:bleep"
     ],
     "main": "./out/extension.js",
     "contributes": {
         "languages": [
             {
-                "id": "lox",
+                "id": "bleep",
                 "aliases": [
-                    "Lox",
-                    "lox"
+                    "Bleep",
+                    "bleep"
                 ],
                 "extensions": [
-                    ".lox"
+                    ".ble"
                 ],
                 "configuration": "./language-configuration.json"
             }
         ],
         "grammars": [
             {
-                "language": "lox",
-                "scopeName": "source.lox",
-                "path": "./syntaxes/lox.tmLanguage.json"
+                "language": "bleep",
+                "scopeName": "source.bleep",
+                "path": "./syntaxes/bleep.tmLanguage.json"
             }
         ]
     },
@@ -50,11 +50,8 @@
         "pretest": "npm run compile && npm run lint",
         "fix": "prettier --write '**/*.{ts,js,json,md}'",
         "lint": "eslint src --ext ts && prettier --check '**/*.{ts,js,json,md}'",
-        "test": "npm run lox:test && npm run ext:test",
-        "ext:test": "node ./out/test/runTest.js",
-        "lox": "ts-node src/jslox/main.ts",
-        "lox:generate": "ts-node src/jslox/astGenerator.ts > src/jslox/Expr.ts",
-        "lox:test": "ts-mocha 'src/jslox/**/*.test.ts'"
+        "bleep": "ts-node src/jsbleep/main.ts",
+        "bleep:generate": "ts-node src/jsbleep/astGenerator.ts > src/jsbleep/Expr.ts"
     },
     "devDependencies": {
         "@types/glob": "^8.1.0",

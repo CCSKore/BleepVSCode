@@ -3,10 +3,10 @@ import { BleepType } from "./Interpreter";
 import { BleepClass } from "./BleepClass";
 import { Token } from "./Token";
 
-export class LoxInstance {
+export class BleepInstance {
     private fields = new Map<string, BleepType>();
 
-    constructor(public klass: BleepClass) {}
+    constructor(public klass: BleepClass) { }
 
     get(name: Token): BleepType {
         if (this.fields.has(name.lexeme)) {

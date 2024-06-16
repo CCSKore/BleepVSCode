@@ -5,11 +5,11 @@ import { Bleep } from "./Bleep";
 export async function runFile(filename: string) {
     const bleep = new Bleep();
     const source = await fs.readFile(filename, "utf8");
-    await lox.run(source);
-    if (lox.hadError) {
+    await bleep.run(source);
+    if (bleep.hadError) {
         process.exit(65);
     }
-    if (lox.hadRuntimeError) {
+    if (bleep.hadRuntimeError) {
         process.exit(70);
     }
 }

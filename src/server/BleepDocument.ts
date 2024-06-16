@@ -1,13 +1,13 @@
 import { Diagnostic, DiagnosticSeverity, DocumentSymbol, Position } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { ErrorReporter } from "../jslox/Error";
-import { Scanner } from "../jslox/Scanner";
-import { Parser } from "../jslox/Parser";
-import { Resolver } from "../jslox/Resolver";
-import { Token } from "../jslox/Token";
+import { ErrorReporter } from "../jsbleep/Error";
+import { Scanner } from "../jsbleep/Scanner";
+import { Parser } from "../jsbleep/Parser";
+import { Resolver } from "../jsbleep/Resolver";
+import { Token } from "../jsbleep/Token";
 import { SemanticToken, SemanticTokenAnalyzer } from "./SemanticTokenAnalyzer";
 
-export class LoxDocument {
+export class BleepDocument {
     public diagnostics: Diagnostic[] = [];
     public hadError: boolean = false;
     public definitions: Map<Token, Token[]> = new Map();
@@ -15,7 +15,7 @@ export class LoxDocument {
     public semanticTokens: SemanticToken[] = [];
     public documentSymbols?: DocumentSymbol[];
 
-    constructor(public document: TextDocument) {}
+    constructor(public document: TextDocument) { }
 
     analyze() {
         const source = this.document.getText();
@@ -34,7 +34,7 @@ export class LoxDocument {
                         end: this.document.positionAt(token.end),
                     },
                     message: message,
-                    source: "Lox",
+                    source: "Bleep",
                 };
                 this.diagnostics.push(diagnostic);
             },
@@ -46,11 +46,11 @@ export class LoxDocument {
                         end: this.document.positionAt(token.end),
                     },
                     message: message,
-                    source: "Lox",
+                    source: "Bleep",
                 };
                 this.diagnostics.push(diagnostic);
             },
-            runtimeError: function (): void {},
+            runtimeError: function (): void { },
         };
 
         const tokens = new Scanner(source, reporter).scanTokens();

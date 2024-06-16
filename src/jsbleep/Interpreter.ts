@@ -37,14 +37,19 @@ import { Token } from "./Token";
 
 export type BleepType = null | number | string | boolean | Callable | BleepInstance | BleepClass;
 
-export class BreakException extends Error {}
-export class ContinueException extends Error {}
+export class BreakException extends Error { }
+export class ContinueException extends Error { }
 
 export class Interpreter implements Visitor<BleepType> {
     private _environment: Environment;
     private locals: Map<Expr, number> = new Map();
+    private static INSTANCE: Interpreter;
+    public static get(): Interpreter {
+        return this.INSTANCE;
+    }
 
     constructor(private readonly errorReporter = defaultErrorReporter, private globals: Environment = new Buildins()) {
+        Interpreter.INSTANCE = this;
         this._environment = globals;
     }
 
@@ -52,7 +57,7 @@ export class Interpreter implements Visitor<BleepType> {
         return this._environment;
     }
 
-    interpret(expr: Expr, locals: Map<Expr, number>): LoxType {
+    interpret(expr: Expr, locals: Map<Expr, number>): BleepType {
         this.locals = locals;
         try {
             return this.stringify(expr.visit(this));
@@ -151,7 +156,7 @@ export class Interpreter implements Visitor<BleepType> {
 
         const methods: Map<string, Callable> = new Map();
         for (const method of classstmt.methods) {
-            const func = new LoxFunction(method, this._environment, method.name.lexeme === "init");
+            const func = new BleepFunction(method, this._environment, method.name.lexeme === "init");
             methods.set(method.name.lexeme, func);
         }
 

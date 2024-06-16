@@ -42,7 +42,7 @@ export class Parser {
     constructor(
         private readonly tokens: Generator<Token>,
         private readonly errorReporter: ErrorReporter = defaultErrorReporter
-    ) {}
+    ) { }
 
     parse(): Array<Stmt> | null {
         this.advance();
@@ -421,7 +421,7 @@ export class Parser {
             return new Literal(true);
         }
 
-        if (this.match("NIL")) {
+        if (this.match("EMPTY")) {
             return new Literal(null);
         }
 

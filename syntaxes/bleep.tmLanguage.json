@@ -45,7 +45,7 @@
                 },
                 {
                     "name": "variable.function.buildin.bleep",
-                    "match": "\\b(clock|thread|info|warn|error)\\b"
+                    "match": "\\b(clock|thread|info|warn|error|import|exports\\.set|)\\b"
                 },
                 {
                     "name": "storage.type.class.bleep",

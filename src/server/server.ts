@@ -13,7 +13,7 @@ import {
 } from "vscode-languageserver/node";
 
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { LoxLspServer } from "./LoxLspServer";
+import { BleepLspServer } from "./BleepLspServer";
 import { TOKEN_LEGEND } from "./SemanticTokenAnalyzer";
 
 // Create a connection for the server, using Node's IPC as a transport.
@@ -23,7 +23,7 @@ const connection = createConnection(ProposedFeatures.all);
 // Create a simple text document manager.
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
-const loxServer = new LoxLspServer(documents, (type, params) => {
+const bleepServer = new BleepLspServer(documents, (type, params) => {
     switch (type) {
         case "diagnostics":
             connection.sendDiagnostics(params);
@@ -79,34 +79,34 @@ connection.onInitialize((params: InitializeParams) => {
     return result;
 });
 
-connection.onInitialized(() => {});
+connection.onInitialized(() => { });
 
 connection.onPrepareRename((params: TextDocumentPositionParams) => {
-    return loxServer.onPrepareRename(params.textDocument.uri, params.position);
+    return bleepServer.onPrepareRename(params.textDocument.uri, params.position);
 });
 
 connection.onRenameRequest((params) => {
-    return loxServer.onRename(params.textDocument.uri, params.position, params.newName);
+    return bleepServer.onRename(params.textDocument.uri, params.position, params.newName);
 });
 
 connection.onDefinition((params: TextDocumentPositionParams) => {
-    return loxServer.onDefinition(params.textDocument.uri, params.position);
+    return bleepServer.onDefinition(params.textDocument.uri, params.position);
 });
 
 connection.onReferences((params: TextDocumentPositionParams) => {
-    return loxServer.onReferences(params.textDocument.uri, params.position);
+    return bleepServer.onReferences(params.textDocument.uri, params.position);
 });
 
 connection.onDocumentSymbol((params) => {
-    return loxServer.onDocumentSymbol(params.textDocument.uri);
+    return bleepServer.onDocumentSymbol(params.textDocument.uri);
 });
 
 connection.onDocumentHighlight((params) => {
-    return loxServer.onDocumentHighlight(params.textDocument.uri, params.position);
+    return bleepServer.onDocumentHighlight(params.textDocument.uri, params.position);
 });
 
 connection.languages.semanticTokens.on((params) => {
-    return loxServer.onSemanticTokens(params.textDocument.uri);
+    return bleepServer.onSemanticTokens(params.textDocument.uri);
 });
 
 documents.listen(connection);

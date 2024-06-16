@@ -17,15 +17,15 @@ import {
     WorkspaceEdit,
 } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { Token } from "../jslox/Token";
+import { Token } from "../jsbleep/Token";
 import { TOKEN_TO_ID } from "./SemanticTokenAnalyzer";
-import { LoxDocument } from "./LoxDocument";
+import { BleepDocument } from "./BleepDocument";
 
 type LspEventListner = ((type: "diagnostics", params: PublishDiagnosticsParams) => void) &
     ((type: "foo", params: any) => void);
 
-export class LoxLspServer {
-    loxDocuments: Map<string, LoxDocument> = new Map();
+export class BleepLspServer {
+    bleepDocuments: Map<string, BleepDocument> = new Map();
 
     constructor(private documents: TextDocuments<TextDocument>, private listener: LspEventListner) {
         this.documents.onDidChangeContent((change) => {
@@ -33,43 +33,43 @@ export class LoxLspServer {
         });
 
         this.documents.onDidClose((event) => {
-            this.loxDocuments.delete(event.document.uri);
+            this.bleepDocuments.delete(event.document.uri);
         });
     }
 
     onDidChangeContent(uri: string) {
-        let loxDocument = this.loxDocuments.get(uri);
-        if (!loxDocument) {
+        let bleepDocument = this.bleepDocuments.get(uri);
+        if (!bleepDocument) {
             const document = this.documents.get(uri);
             if (document) {
-                loxDocument = new LoxDocument(document);
-                this.loxDocuments.set(uri, loxDocument);
+                bleepDocument = new BleepDocument(document);
+                this.bleepDocuments.set(uri, bleepDocument);
             }
         }
 
-        if (loxDocument) {
-            loxDocument.analyze();
+        if (bleepDocument) {
+            bleepDocument.analyze();
             this.listener("diagnostics", {
                 uri: uri,
-                diagnostics: loxDocument.diagnostics,
+                diagnostics: bleepDocument.diagnostics,
             });
         }
     }
 
     onDefinition(uri: string, position: Position): Definition | DefinitionLink[] | null {
-        const loxDocument = this.loxDocuments.get(uri);
-        if (!loxDocument) {
+        const bleepDocument = this.bleepDocuments.get(uri);
+        if (!bleepDocument) {
             return null;
         }
 
-        const offset = loxDocument.document.offsetAt(position);
-        for (const [reference, definition] of loxDocument.references) {
+        const offset = bleepDocument.document.offsetAt(position);
+        for (const [reference, definition] of bleepDocument.references) {
             if (reference.start <= offset && reference.end >= offset) {
                 return {
-                    uri: loxDocument.document.uri,
+                    uri: bleepDocument.document.uri,
                     range: {
-                        start: loxDocument.document.positionAt(definition.start),
-                        end: loxDocument.document.positionAt(definition.end),
+                        start: bleepDocument.document.positionAt(definition.start),
+                        end: bleepDocument.document.positionAt(definition.end),
                     },
                 };
             }
@@ -78,22 +78,22 @@ export class LoxLspServer {
     }
 
     onReferences(uri: string, position: Position): HandlerResult<Location[] | null | undefined, void> {
-        const loxDocument = this.loxDocuments.get(uri);
-        if (!loxDocument) {
+        const bleepDocument = this.bleepDocuments.get(uri);
+        if (!bleepDocument) {
             return null;
         }
 
-        const offset = loxDocument.document.offsetAt(position);
+        const offset = bleepDocument.document.offsetAt(position);
 
-        for (const [definition, references] of loxDocument.definitions) {
+        for (const [definition, references] of bleepDocument.definitions) {
             if (definition.start <= offset && definition.end >= offset) {
                 const locations: Location[] = [];
                 for (const reference of references || []) {
                     locations.push({
-                        uri: loxDocument.document.uri,
+                        uri: bleepDocument.document.uri,
                         range: {
-                            start: loxDocument.document.positionAt(reference.start),
-                            end: loxDocument.document.positionAt(reference.end),
+                            start: bleepDocument.document.positionAt(reference.start),
+                            end: bleepDocument.document.positionAt(reference.end),
                         },
                     });
                 }
@@ -104,14 +104,14 @@ export class LoxLspServer {
     }
 
     onSemanticTokens(uri: string): HandlerResult<SemanticTokens, void> {
-        const loxDocument = this.loxDocuments.get(uri);
-        if (!loxDocument || !loxDocument.semanticTokens) {
+        const bleepDocument = this.bleepDocuments.get(uri);
+        if (!bleepDocument || !bleepDocument.semanticTokens) {
             return { data: [] };
         }
 
         const builder = new SemanticTokensBuilder();
-        for (const token of loxDocument.semanticTokens) {
-            const { line, character } = loxDocument.document.positionAt(token.start);
+        for (const token of bleepDocument.semanticTokens) {
+            const { line, character } = bleepDocument.document.positionAt(token.start);
             const length = token.end - token.start;
             const typeId = TOKEN_TO_ID[token.type];
 
@@ -123,25 +123,25 @@ export class LoxLspServer {
     }
 
     onDocumentSymbol(uri: string): HandlerResult<SymbolInformation[] | DocumentSymbol[] | null | undefined, void> {
-        const loxDocument = this.loxDocuments.get(uri);
-        if (!loxDocument || !loxDocument.documentSymbols) {
+        const bleepDocument = this.bleepDocuments.get(uri);
+        if (!bleepDocument || !bleepDocument.documentSymbols) {
             return [];
         }
 
-        return loxDocument.documentSymbols;
+        return bleepDocument.documentSymbols;
     }
 
     onRename(uri: string, position: Position, newName: string): HandlerResult<WorkspaceEdit | null | undefined, void> {
-        const loxDocument = this.loxDocuments.get(uri);
-        if (!loxDocument || !loxDocument.definitions) {
+        const bleepDocument = this.bleepDocuments.get(uri);
+        if (!bleepDocument || !bleepDocument.definitions) {
             return null;
         }
 
-        const edits: Array<TextEdit> = loxDocument.findAllFromPosition(position).map((token) => {
+        const edits: Array<TextEdit> = bleepDocument.findAllFromPosition(position).map((token) => {
             return {
                 range: {
-                    start: loxDocument.document.positionAt(token.start),
-                    end: loxDocument.document.positionAt(token.end),
+                    start: bleepDocument.document.positionAt(token.start),
+                    end: bleepDocument.document.positionAt(token.end),
                 },
                 newText: newName,
             };
@@ -161,28 +161,28 @@ export class LoxLspServer {
         Range | { range: Range; placeholder: string } | { defaultBehavior: boolean } | null | undefined,
         void
     > {
-        const loxDocument = this.loxDocuments.get(uri);
-        if (!loxDocument || !loxDocument.definitions) {
+        const bleepDocument = this.bleepDocuments.get(uri);
+        if (!bleepDocument || !bleepDocument.definitions) {
             return null;
         }
 
-        const offset = loxDocument.document.offsetAt(position);
-        for (const definition of loxDocument.definitions.keys()) {
+        const offset = bleepDocument.document.offsetAt(position);
+        for (const definition of bleepDocument.definitions.keys()) {
             if (definition.start <= offset && definition.end >= offset) {
                 return {
                     range: {
-                        start: loxDocument.document.positionAt(definition.start),
-                        end: loxDocument.document.positionAt(definition.end),
+                        start: bleepDocument.document.positionAt(definition.start),
+                        end: bleepDocument.document.positionAt(definition.end),
                     },
                     placeholder: definition.lexeme,
                 };
             }
-            for (const reference of loxDocument.definitions.get(definition) || []) {
+            for (const reference of bleepDocument.definitions.get(definition) || []) {
                 if (reference.start <= offset && reference.end >= offset) {
                     return {
                         range: {
-                            start: loxDocument.document.positionAt(reference.start),
-                            end: loxDocument.document.positionAt(reference.end),
+                            start: bleepDocument.document.positionAt(reference.start),
+                            end: bleepDocument.document.positionAt(reference.end),
                         },
                         placeholder: reference.lexeme,
                     };
@@ -193,12 +193,12 @@ export class LoxLspServer {
     }
 
     onDocumentHighlight(uri: string, position: Position): HandlerResult<DocumentHighlight[] | null | undefined, void> {
-        const loxDocument = this.loxDocuments.get(uri);
-        if (!loxDocument || !loxDocument.definitions) {
+        const bleepDocument = this.bleepDocuments.get(uri);
+        if (!bleepDocument || !bleepDocument.definitions) {
             return null;
         }
 
-        const symbols = loxDocument.findAllFromPosition(position);
+        const symbols = bleepDocument.findAllFromPosition(position);
         if (!symbols.length) {
             return null;
         }
@@ -206,8 +206,8 @@ export class LoxLspServer {
         return symbols.map((symbol) => {
             return {
                 range: {
-                    start: loxDocument.document.positionAt(symbol.start),
-                    end: loxDocument.document.positionAt(symbol.end),
+                    start: bleepDocument.document.positionAt(symbol.start),
+                    end: bleepDocument.document.positionAt(symbol.end),
                 },
                 kind: DocumentHighlightKind.Text,
             };

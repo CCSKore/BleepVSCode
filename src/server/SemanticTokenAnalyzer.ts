@@ -26,8 +26,8 @@ import {
     VariableDeclaration,
     Visitor,
     WhileStmt,
-} from "../jslox/Expr";
-import { Resolver } from "../jslox/Resolver";
+} from "../jsbleep/Expr";
+import { Resolver } from "../jsbleep/Resolver";
 
 export const TOKEN_LEGEND = ["class", "function", "variable", "parameter", "property"] as const;
 export type TokenType = (typeof TOKEN_LEGEND)[number];
@@ -81,7 +81,7 @@ export class SemanticTokenAnalyzer implements Visitor<void> {
         grouping.expression.visit(this);
     }
 
-    visitLiteral(literal: Literal): void {}
+    visitLiteral(literal: Literal): void { }
 
     visitLogical(logical: Logical): void {
         logical.left.visit(this);
@@ -120,7 +120,7 @@ export class SemanticTokenAnalyzer implements Visitor<void> {
         expression.expression.visit(this);
     }
 
-    visitSuperExpr(superexpr: SuperExpr): void {}
+    visitSuperExpr(superexpr: SuperExpr): void { }
 
     visitClassStmt(classstmt: ClassStmt): void {
         this.tokens.push({
@@ -180,7 +180,7 @@ export class SemanticTokenAnalyzer implements Visitor<void> {
         set.value.visit(this);
     }
 
-    visitThisExpr(thisexpr: ThisExpr): void {}
+    visitThisExpr(thisexpr: ThisExpr): void { }
 
     visitFunctionStmt(functionstmt: FunctionStmt): void {
         const isMethod = this.currentSymbol?.kind === SymbolKind.Class;
@@ -217,8 +217,8 @@ export class SemanticTokenAnalyzer implements Visitor<void> {
         this.endBlock(enclosingSymbol);
     }
 
-    visitBreakStmt(breakstmt: BreakStmt): void {}
-    visitContinueStmt(continuestmt: ContinueStmt): void {}
+    visitBreakStmt(breakstmt: BreakStmt): void { }
+    visitContinueStmt(continuestmt: ContinueStmt): void { }
 
     visitIfStmt(ifstmt: IfStmt): void {
         ifstmt.condition.visit(this);

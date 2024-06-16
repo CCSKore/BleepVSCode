@@ -37,7 +37,7 @@ export type TokenType =
     | "FUN"
     | "FOR"
     | "IF"
-    | "NIL"
+    | "EMPTY"
     | "OR"
     | "PRINT"
     | "RETURN"
@@ -59,7 +59,7 @@ export class Token {
         readonly character: number,
         readonly start: number,
         readonly end: number
-    ) {}
+    ) { }
 
     toString(): string {
         return `${this.type} ${this.lexeme} ${this.literal || ""}`;
