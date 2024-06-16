@@ -1,14 +1,14 @@
 import { RuntimeError } from "./Error";
-import { LoxType } from "./Interpreter";
-import { LoxClass } from "./LoxClass";
+import { BleepType } from "./Interpreter";
+import { BleepClass } from "./BleepClass";
 import { Token } from "./Token";
 
 export class LoxInstance {
-    private fields = new Map<string, LoxType>();
+    private fields = new Map<string, BleepType>();
 
-    constructor(public klass: LoxClass) {}
+    constructor(public klass: BleepClass) {}
 
-    get(name: Token): LoxType {
+    get(name: Token): BleepType {
         if (this.fields.has(name.lexeme)) {
             return this.fields.get(name.lexeme)!;
         }
@@ -21,7 +21,7 @@ export class LoxInstance {
         throw new RuntimeError(name, `Undefined property '${name.lexeme}'.`);
     }
 
-    set(name: Token, value: LoxType): void {
+    set(name: Token, value: BleepType): void {
         this.fields.set(name.lexeme, value);
     }
 
