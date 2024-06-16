@@ -1,5 +1,5 @@
 import { Buildins } from "./Buildins";
-import { Callable, LoxFunction, ReturnException } from "./LoxFunction";
+import { Callable, BleepFunction, ReturnException } from "./BleepFunction";
 import { Environment } from "./Environment";
 import { RuntimeError, defaultErrorReporter } from "./Error";
 import {
@@ -31,16 +31,16 @@ import {
     ThisExpr,
     SuperExpr,
 } from "./Expr";
-import { LoxClass } from "./LoxClass";
-import { LoxInstance } from "./LoxInstance";
+import { BleepClass } from "./BleepClass";
+import { BleepInstance } from "./BleepInstance";
 import { Token } from "./Token";
 
-export type LoxType = null | number | string | boolean | Callable | LoxInstance | LoxClass;
+export type BleepType = null | number | string | boolean | Callable | BleepInstance | BleepClass;
 
 export class BreakException extends Error {}
 export class ContinueException extends Error {}
 
-export class Interpreter implements Visitor<LoxType> {
+export class Interpreter implements Visitor<BleepType> {
     private _environment: Environment;
     private locals: Map<Expr, number> = new Map();
 
@@ -81,7 +81,7 @@ export class Interpreter implements Visitor<LoxType> {
         }
     }
 
-    stringify(value: LoxType): string {
+    stringify(value: BleepType): string {
         if (value === null) {
             return "nil";
         } else {
@@ -89,7 +89,7 @@ export class Interpreter implements Visitor<LoxType> {
         }
     }
 
-    visitIfStmt(branch: IfStmt): LoxType {
+    visitIfStmt(branch: IfStmt): BleepType {
         if (this.isTruthy(branch.condition.visit(this))) {
             branch.thenBranch.visit(this);
         } else {
@@ -98,7 +98,7 @@ export class Interpreter implements Visitor<LoxType> {
         return null;
     }
 
-    visitWhileStmt(whilestmt: WhileStmt): LoxType {
+    visitWhileStmt(whilestmt: WhileStmt): BleepType {
         while (this.isTruthy(whilestmt.condition.visit(this))) {
             try {
                 whilestmt.body.visit(this);
@@ -116,13 +116,13 @@ export class Interpreter implements Visitor<LoxType> {
         return null;
     }
 
-    visitSuperExpr(superexpr: SuperExpr): LoxType {
+    visitSuperExpr(superexpr: SuperExpr): BleepType {
         const distance = this.locals.get(superexpr);
         if (distance === undefined) {
             throw new RuntimeError(superexpr.keyword, "Cannot use 'super' outside of a class.");
         }
-        const superclass = this._environment.getAt(distance, "super") as LoxClass;
-        const object = this._environment.getAt(distance - 1, "this") as LoxInstance;
+        const superclass = this._environment.getAt(distance, "super") as BleepClass;
+        const object = this._environment.getAt(distance - 1, "this") as BleepInstance;
 
         const method = superclass.findMethod(superexpr.method.lexeme);
         if (!method) {
@@ -132,12 +132,12 @@ export class Interpreter implements Visitor<LoxType> {
         return method.bind(object);
     }
 
-    visitClassStmt(classstmt: ClassStmt): LoxType {
-        let superclass: LoxType = null;
+    visitClassStmt(classstmt: ClassStmt): BleepType {
+        let superclass: BleepType = null;
 
         if (classstmt.superclass) {
             superclass = classstmt.superclass.visit(this);
-            if (!(superclass instanceof LoxClass)) {
+            if (!(superclass instanceof BleepClass)) {
                 throw new RuntimeError(classstmt.superclass.name, "Superclass must be a class.");
             }
         }
@@ -149,13 +149,13 @@ export class Interpreter implements Visitor<LoxType> {
             this._environment.define("super", superclass);
         }
 
-        const methods: Map<string, LoxFunction> = new Map();
+        const methods: Map<string, Callable> = new Map();
         for (const method of classstmt.methods) {
             const func = new LoxFunction(method, this._environment, method.name.lexeme === "init");
             methods.set(method.name.lexeme, func);
         }
 
-        const klass = new LoxClass(classstmt.name.lexeme, superclass, methods);
+        const klass = new BleepClass(classstmt.name.lexeme, superclass, methods);
 
         if (superclass) {
             this._environment = this._environment.enclosing!;
@@ -165,31 +165,31 @@ export class Interpreter implements Visitor<LoxType> {
         return null;
     }
 
-    visitThisExpr(thisexpr: ThisExpr): LoxType {
+    visitThisExpr(thisexpr: ThisExpr): BleepType {
         return this.lookupVariable(thisexpr.keyword, thisexpr);
     }
 
-    visitFunctionStmt(functiondecl: FunctionStmt): LoxType {
-        this._environment.define(functiondecl.name.lexeme, new LoxFunction(functiondecl, this._environment));
+    visitFunctionStmt(functiondecl: FunctionStmt): BleepType {
+        this._environment.define(functiondecl.name.lexeme, new BleepFunction(functiondecl, this._environment));
         return null;
     }
 
-    visitReturnStmt(returnstmt: ReturnStmt): LoxType {
+    visitReturnStmt(returnstmt: ReturnStmt): BleepType {
         throw new ReturnException(returnstmt?.value?.visit(this) || null);
     }
 
-    visitGet(get: Get): LoxType {
+    visitGet(get: Get): BleepType {
         const object = get.object.visit(this);
-        if (object instanceof LoxInstance) {
+        if (object instanceof BleepInstance) {
             return object.get(get.name);
         }
 
         throw new RuntimeError(get.name, "Only instances have properties.");
     }
 
-    visitSet(set: Set): LoxType {
+    visitSet(set: Set): BleepType {
         const object = set.object.visit(this);
-        if (object instanceof LoxInstance) {
+        if (object instanceof BleepInstance) {
             object.set(set.name, set.value.visit(this));
             return null;
         }
@@ -197,7 +197,7 @@ export class Interpreter implements Visitor<LoxType> {
         throw new RuntimeError(set.name, "Only instances have fields.");
     }
 
-    visitCall(call: Call): LoxType {
+    visitCall(call: Call): BleepType {
         const callee = call.callee.visit(this);
 
         const args = call.args.map((arg) => arg.visit(this));
@@ -213,7 +213,7 @@ export class Interpreter implements Visitor<LoxType> {
         return callee.call(this, args);
     }
 
-    visitForStmt(forstmt: ForStmt): LoxType {
+    visitForStmt(forstmt: ForStmt): BleepType {
         const oldEnvironment = this._environment;
         this._environment = new Environment(this._environment);
 
@@ -243,15 +243,15 @@ export class Interpreter implements Visitor<LoxType> {
         return null;
     }
 
-    visitBreakStmt(breakstmt: BreakStmt): LoxType {
+    visitBreakStmt(breakstmt: BreakStmt): BleepType {
         throw new BreakException();
     }
 
-    visitContinueStmt(continuestmt: ContinueStmt): LoxType {
+    visitContinueStmt(continuestmt: ContinueStmt): BleepType {
         throw new ContinueException();
     }
 
-    visitLogical(logical: Logical): LoxType {
+    visitLogical(logical: Logical): BleepType {
         const left = logical.left.visit(this);
 
         if (logical.operator.type === "OR") {
@@ -267,7 +267,7 @@ export class Interpreter implements Visitor<LoxType> {
         return logical.right.visit(this);
     }
 
-    visitAssign(assign: Assign): LoxType {
+    visitAssign(assign: Assign): BleepType {
         const value = assign.value.visit(this);
 
         const distance = this.locals.get(assign);
@@ -280,30 +280,30 @@ export class Interpreter implements Visitor<LoxType> {
         return value;
     }
 
-    visitVariable(variable: Variable): LoxType {
+    visitVariable(variable: Variable): BleepType {
         return this.lookupVariable(variable.name, variable);
     }
 
-    visitVariableDeclaration(variabledeclaration: VariableDeclaration): LoxType {
+    visitVariableDeclaration(variabledeclaration: VariableDeclaration): BleepType {
         this._environment.define(variabledeclaration.name.lexeme, variabledeclaration.initializer.visit(this));
         return null;
     }
 
-    visitExpression(expression: Expression): LoxType {
+    visitExpression(expression: Expression): BleepType {
         return null;
     }
 
-    visitBlock(block: Block): LoxType {
+    visitBlock(block: Block): BleepType {
         this.executeBlock(block.statements, new Environment(this._environment));
         return null;
     }
 
-    visitPrintStmt(print: PrintStmt): LoxType {
+    visitPrintStmt(print: PrintStmt): BleepType {
         console.log(this.stringify(print.expression.visit(this)));
         return null;
     }
 
-    visitBinary(binary: Binary): LoxType {
+    visitBinary(binary: Binary): BleepType {
         const left = binary.left.visit(this);
         const right = binary.right.visit(this);
 
@@ -366,15 +366,15 @@ export class Interpreter implements Visitor<LoxType> {
         }
     }
 
-    visitGrouping(grouping: Grouping): LoxType {
+    visitGrouping(grouping: Grouping): BleepType {
         return grouping.expression.visit(this);
     }
 
-    visitLiteral(literal: Literal): LoxType {
+    visitLiteral(literal: Literal): BleepType {
         return literal.value;
     }
 
-    visitUnary(unary: Unary): LoxType {
+    visitUnary(unary: Unary): BleepType {
         const right = unary.right.visit(this);
         switch (unary.operator.type) {
             case "MINUS":
@@ -401,7 +401,7 @@ export class Interpreter implements Visitor<LoxType> {
         }
     }
 
-    private lookupVariable(name: Token, expr: Expr): LoxType {
+    private lookupVariable(name: Token, expr: Expr): BleepType {
         const distance = this.locals.get(expr);
 
         if (distance !== undefined) {
@@ -411,11 +411,11 @@ export class Interpreter implements Visitor<LoxType> {
         }
     }
 
-    private isTruthy(right: LoxType): boolean {
+    private isTruthy(right: BleepType): boolean {
         return right !== null && right !== false;
     }
 
-    private assertNumberOperand(operation: Token, operand: LoxType): asserts operand is number {
+    private assertNumberOperand(operation: Token, operand: BleepType): asserts operand is number {
         if (typeof operand === "number") {
             return;
         }
