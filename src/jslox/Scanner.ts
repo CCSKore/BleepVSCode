@@ -9,7 +9,7 @@ const keywords: Record<string, TokenType> = {
     for: "FOR",
     fun: "FUN",
     if: "IF",
-    nil: "NIL",
+    empty: "EMPTY",
     or: "OR",
     print: "PRINT",
     return: "RETURN",
